@@ -3,6 +3,16 @@ const themes = {
   desert: 'desert',
   arctic: 'arctic',
   mountain: 'mountain',
+
+  item(level) {
+    switch (level) {
+      case 1: return themes.prairie
+      case 2: return themes.desert
+      case 3: return themes.arctic
+      case 4: return themes.mountain
+    }
+  }
+
 };
 
 export default themes;
