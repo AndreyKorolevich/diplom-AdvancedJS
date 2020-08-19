@@ -3,6 +3,7 @@ import PositionedCharacter from "./PositionedCharacter";
 import {generateTeam} from "./generators";
 import {Bowman, Daemon, Magician, Swordsman, Undead, Vampire} from "./Character";
 import Team from "./Team";
+import GamePlay from "./GamePlay";
 
 
 export default class GameController {
@@ -12,6 +13,7 @@ export default class GameController {
     this.level = 1;
     this.UserTeam = new Team([]);
     this.CompTeam = new Team([]);
+    this.currentIndex = null;
 
     this.onCellClick = this.onCellClick.bind(this);
     this.onCellEnter = this.onCellEnter.bind(this);
@@ -80,17 +82,37 @@ export default class GameController {
 
     this.UserTeam.addCharacters(userTeamPosition);
     this.CompTeam.addCharacters(compTeamPosition);
-    this.gamePlay.redrawPositions([...this.UserTeam.team, ...this.CompTeam.team])
+    this.gamePlay.drawUi(themes.item(this.level));
+    this.gamePlay.redrawPositions([...this.UserTeam.team, ...this.CompTeam.team]);
   }
 
 
 
   onCellClick(index) {
-    // TODO: react to click
+    for (const item of [...this.UserTeam.team]) {
+      if (item.position === index && index !== this.currentIndex) {
+        if(this.currentIndex !== null){
+          this.gamePlay.deselectCell(this.currentIndex);
+        }
+        this.gamePlay.selectCell(index);
+        this.currentIndex = index;
+        return;
+      }else if(item.position === index && index === this.currentIndex) {
+        this.gamePlay.deselectCell(index);
+        this.currentIndex = null;
+      }
+    }
+
+    for (const item of [...this.CompTeam.team]) {
+      if (item.position === index) {
+        GamePlay.showError('This isn`t your character');
+        return;
+      }
+    }
+
   }
 
   onCellEnter(index) {
-    // TODO: react to mouse enter
     for (const item of [...this.UserTeam.team, ...this.CompTeam.team]) {
       if (item.position === index) {
         const message = `🎖${item.character.level}⚔${item.character.attack}🛡${item.character.defence}❤${item.character.health}`
