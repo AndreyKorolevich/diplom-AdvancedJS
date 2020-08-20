@@ -1,4 +1,4 @@
-import {calcTileType} from '../utils';
+import { calcTileType } from '../utils';
 
 test('should top-left', () => {
   const result = calcTileType(0, 8);

@@ -5,7 +5,7 @@
  * @param maxLevel max character level
  * @returns Character type children (ex. Magician, Bowman, etc)
  */
-import Team from "./Team";
+import Team from './Team';
 
 export function characterGenerator(allowedTypes, maxLevel) {
   const numberCharacter = Math.floor(Math.random() * allowedTypes.length);

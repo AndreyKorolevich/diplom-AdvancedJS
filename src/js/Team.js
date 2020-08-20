@@ -3,11 +3,11 @@ export default class Team {
     this.team = arrCharacters;
   }
 
-  addCharacters(arrCharacters){
-    this.team = [...this.team, ...arrCharacters]
+  addCharacters(arrCharacters) {
+    this.team = [...this.team, ...arrCharacters];
   }
 
-  deleteCharacter(){
+  deleteCharacter() {
 
   }
 }
