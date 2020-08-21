@@ -1,13 +1,13 @@
 import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
-import {generateTeam} from './generators';
+import { generateTeam } from './generators';
 import {
   Bowman, Daemon, Magician, Swordsman, Undead, Vampire,
 } from './Character';
 import Team from './Team';
 import GamePlay from './GamePlay';
 import cursors from './cursors';
-import createMatrix, {findIndex, findRange} from './createMatrix';
+import createMatrix, { findIndex, findRange, findRangeMove } from './createMatrix';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -18,8 +18,10 @@ export default class GameController {
     this.CompTeam = new Team([]);
     this.currentIndex = null;
     this.currentRangeAttack = null;
+    this.currentCharacter = null;
     this.arrPostions = [];
     this.currentRange = [];
+    this.currentRangeMove = new Set();
     this.matrix = createMatrix(this.gamePlay.boardSize);
     this.currentIndexPosition = null;
 
@@ -90,30 +92,54 @@ export default class GameController {
 
     this.UserTeam.addCharacters(userTeamPosition);
     this.CompTeam.addCharacters(compTeamPosition);
+    this.arrPostions = [...this.UserTeam.team, ...this.CompTeam.team].map((elem) => elem.position);
+    this.arrCompPosition = [...this.CompTeam.team].map((elem) => elem.position);
     this.gamePlay.drawUi(themes.item(this.level));
     this.gamePlay.redrawPositions([...this.UserTeam.team, ...this.CompTeam.team]);
   }
 
   onCellClick(index) {
-    for (const item of [...this.UserTeam.team]) {
+    for (const item of [...this.UserTeam.team]) { // choose character and add yellow circle
       if (item.position === index && index !== this.currentIndex) {
         if (this.currentIndex !== null) {
           this.gamePlay.deselectCell(this.currentIndex);
         }
         this.gamePlay.selectCell(index);
         this.currentIndex = index;
+        this.currentCharacter = item;
         this.currentRangeAttack = item.character.rangeAttack;
+        this.currentMove = item.character.rangeMove;
         return;
       }
       if (item.position === index && index === this.currentIndex) {
         this.gamePlay.deselectCell(index);
         this.currentIndex = null;
         this.currentRangeAttack = null;
+        this.currentMove = null;
+        this.currentCharacter = null;
+        this.currentRangeMove.clear();
       }
     }
 
-    for (const item of [...this.CompTeam.team]) {
-      if (item.position === index) {
+    if (this.currentRangeMove.has(index)) { // move user character
+      this.gamePlay.deselectCell(this.currentIndex);
+      this.gamePlay.deselectCell(index);
+      this.currentCharacter.position = index;
+      this.currentIndex = null;
+      this.currentIndexPosition = null;
+      this.currentRangeAttack = null;
+      this.currentCharacter = null;
+      this.currentRange = [];
+      this.arrPostions = [...this.UserTeam.team, ...this.CompTeam.team].map((elem) => elem.position);
+      this.currentRangeMove.clear();
+      this.gamePlay.redrawPositions([...this.UserTeam.team, ...this.CompTeam.team]);
+    }
+
+    for (const item of [...this.CompTeam.team]) { // show error
+      if (this.currentIndex !== null && this.currentRange.indexOf(index) === -1 && this.arrCompPosition.indexOf(index) !== -1) {
+        this.gamePlay.setCursor(cursors.notallowed);
+        GamePlay.showError('This isn`t allowed action');
+      } else if (item.position === index) {
         GamePlay.showError('This isn`t your character');
         return;
       }
@@ -121,8 +147,6 @@ export default class GameController {
   }
 
   onCellEnter(index) {
-    this.arrPostions = [...this.UserTeam.team, ...this.CompTeam.team].map((elem) => elem.position);
-    const arrCompPosition = [...this.CompTeam.team].map((elem) => elem.position);
     for (const item of [...this.UserTeam.team, ...this.CompTeam.team]) {
       if (item.position === index) {
         const message = `🎖${item.character.level}⚔${item.character.attack}🛡${item.character.defence}❤${item.character.health}`;
@@ -137,24 +161,32 @@ export default class GameController {
     }
 
     if (this.currentIndex !== null) {
+      // find index current character in matrix
       this.currentIndexPosition = findIndex(this.currentIndex, this.matrix, this.gamePlay.boardSize);
-      this.currentRange = findRange(this.currentIndexPosition[0], this.currentIndexPosition[1], this.matrix, this.currentRangeAttack);
-      for (const item of [...this.CompTeam.team]) {
-        if (item.position === index) {
-          this.gamePlay.setCursor(cursors.crosshair);
-        }
+      this.currentRange = findRange(this.currentIndexPosition[0], this.currentIndexPosition[1],
+        this.matrix, this.currentRangeAttack); // find range for attack current character
+      this.currentRangeMove = findRangeMove(this.currentIndexPosition[0], this.currentIndexPosition[1],
+        this.matrix, this.currentMove); // find range for move current character
+
+      // show place that character can attack
+      if (this.currentRange.indexOf(index) !== -1 && this.arrPostions.indexOf(index) === -1) {
+        this.gamePlay.selectCell(index, 'green');
       }
 
-      if (this.currentRange.indexOf(index) !== -1 && this.arrPostions.indexOf(index) === -1) {
+      // show place that character can move
+      if (this.currentRangeMove.has(index) && this.arrPostions.indexOf(index) === -1) {
         this.gamePlay.setCursor(cursors.pointer);
-        this.gamePlay.selectCell(index, 'green');
       }
     }
 
-    if (this.currentIndex !== null && this.currentRange.indexOf(index) === -1 && arrCompPosition.indexOf(index) !== -1) {
-      this.gamePlay.setCursor(cursors.notallowed)
-    } else if(this.currentIndex !== null && arrCompPosition.indexOf(index) !== -1) {
+    // add red circle and cursor crosshair on enemy if he`s in current range user character or add crosshair notallowed
+    // if he`s not in current range.
+    if (this.currentIndex !== null && this.currentRange.indexOf(index) === -1
+      && this.arrCompPosition.indexOf(index) !== -1) {
+      this.gamePlay.setCursor(cursors.notallowed);
+    } else if (this.currentIndex !== null && this.arrCompPosition.indexOf(index) !== -1) {
       this.gamePlay.selectCell(index, 'red');
+      this.gamePlay.setCursor(cursors.crosshair);
     }
   }
 
@@ -171,9 +203,14 @@ export default class GameController {
       }
     }
 
-    if (this.currentRange.indexOf(index) !== -1 && this.arrPostions.indexOf(index) === -1) {
+    if ((this.currentRange.indexOf(index) !== -1 && this.arrPostions.indexOf(index) === -1)
+      || (this.currentRange.indexOf(index) !== -1 && this.arrCompPosition.indexOf(index) !== -1)) {
       this.gamePlay.setCursor(cursors.auto);
       this.gamePlay.deselectCell(index);
+    }
+
+    if (this.currentRangeMove !== null && this.currentRangeMove.has(index) && this.arrPostions.indexOf(index) === -1) {
+      this.gamePlay.setCursor(cursors.auto);
     }
   }
 }

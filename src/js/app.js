@@ -13,4 +13,5 @@ const stateService = new GameStateService(localStorage);
 const gameCtrl = new GameController(gamePlay, stateService);
 gameCtrl.init();
 
+window.game = gameCtrl;
 // don't write your code here
