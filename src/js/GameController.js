@@ -1,6 +1,6 @@
 import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
-import { generateTeam } from './generators';
+import {generateTeam} from './generators';
 import {
   Bowman, Daemon, Magician, Swordsman, Undead, Vampire,
 } from './Character';
@@ -8,8 +8,8 @@ import Team from './Team';
 import GamePlay from './GamePlay';
 import cursors from './cursors';
 import GameState from './GameState';
-import { findIndex, findRangeAttack } from './createMatrix';
-import { compAction } from './compAction';
+import {compAction} from './compAction';
+import attack from './attack';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -91,7 +91,7 @@ export default class GameController {
     this.gamePlay.redrawPositions([...this.gameState.arrTeam()]);
   }
 
-  onCellClick(index) {
+  async onCellClick(index) {
     const indexInArr = this.gameState.arrUserPosition().indexOf(index);
     const indexInCompArr = this.gameState.arrCompPosition().indexOf(index);
 
@@ -122,10 +122,18 @@ export default class GameController {
       this.gamePlay.redrawPositions(this.gameState.arrTeam());
 
       compAction(this.gameState);
-
-    } else if (this.gameState.currentIndex !== null && indexInCompArr !== -1 // attack on comp
+    } else if (this.gameState.currentIndex !== null && indexInCompArr !== -1 // attack on computer
       && this.gameState.currentRange().has(index)) {
-      console.log('attack');
+      const indexComp = this.gameState.arrCompPosition().indexOf(index);
+      const compCharacter = this.CompTeam.team[indexComp];
+      const response = await attack(this.gameState.currentCharacter, compCharacter, this.gameState);
+      if (response === 'next') {
+        this.gameState.level += 1;
+        this.levelUp();
+        this.displayCharacter();
+
+      }
+      compAction(this.gameState);
     } else if (indexInCompArr !== -1 && !this.gameState.currentRange().has(index)
       && this.gameState.currentIndex !== null) { // show error
       this.gamePlay.setCursor(cursors.notallowed);
@@ -176,23 +184,31 @@ export default class GameController {
     const indexInCompArr = this.gameState.arrCompPosition().indexOf(index);
     const indexInUserArr = this.gameState.arrUserPosition().indexOf(index);
 
-    if (indexInUserArr !== -1) {
-      this.gamePlay.setCursor(cursors.auto);
-    }
-
-    if (indexInCompArr !== -1) {
-      this.gamePlay.setCursor(cursors.auto);
-    }
-
     if ((this.gameState.currentRange().has(index) && indexInArr === -1)
       || (this.gameState.currentRange().has(index) && indexInCompArr !== -1)) {
       this.gamePlay.setCursor(cursors.auto);
       this.gamePlay.deselectCell(index);
     }
 
-    if (this.gameState.currentRangeMove() !== null && this.gameState.currentRangeMove().has(index)
-      && indexInArr === -1) {
+    if ((this.gameState.currentRangeMove() !== null && this.gameState.currentRangeMove().has(index)
+      && indexInArr === -1) || indexInUserArr !== -1) {
       this.gamePlay.setCursor(cursors.auto);
     }
   }
+
+  levelUp() {
+    for (const item of this.UserTeam.team) {
+      const current = item.character;
+      current.level += 1;
+      current.attack = this.upAttackDefence(current.attack, current.health);
+      current.defence = this.upAttackDefence(current.defence, current.health);
+      current.health = (current.health + 80) < 100 ? current.health + 80 : 100;
+    }
+  }
+
+  upAttackDefence(attackBefore, life) {
+    return Math.floor(Math.max(attackBefore, attackBefore * (1.8 - life / 100)));
+  }
+
 }
+

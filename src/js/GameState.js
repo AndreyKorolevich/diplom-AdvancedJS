@@ -4,6 +4,7 @@ export default class GameState {
   constructor(gamePlay, UserTeam, CompTeam) {
     this.gamePlay = gamePlay;
     this.isMove = 'user';
+    this.block = false;
     this.level = 1;
     this.UserTeam = UserTeam;
     this.CompTeam = CompTeam;
