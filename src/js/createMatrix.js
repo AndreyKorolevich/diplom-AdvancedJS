@@ -21,15 +21,15 @@ export const findIndex = (elem, matrix, size) => {
   }
 };
 
-export const findRange = (row, col, matrix, range) => { // find range for attack
-  const arrRange = [];
+export const findRangeAttack = (row, col, matrix, range) => { // find range for attack
+  const arrRange = new Set();
   const rowStart = row - Math.floor(range / 2) >= 0 ? row - Math.floor(range / 2) : 0;
   const colStart = col > 0 ? col - Math.floor(range / 2) : 0;
 
   for (let i = 0; i < range; i++) {
     if ((rowStart + i) < matrix.length && i <= (row + Math.floor(range / 2))) {
       for (let j = colStart; j <= col + Math.floor(range / 2); j++) {
-        arrRange.push(matrix[rowStart + i][j]);
+        arrRange.add(matrix[rowStart + i][j]);
       }
     }
   }

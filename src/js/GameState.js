@@ -1,5 +1,4 @@
-import Team from './Team';
-import createMatrix, { findIndex, findRange, findRangeMove } from './createMatrix';
+import createMatrix, { findIndex, findRangeAttack, findRangeMove } from './createMatrix';
 
 export default class GameState {
   constructor(gamePlay, UserTeam, CompTeam) {
@@ -10,11 +9,9 @@ export default class GameState {
     this.CompTeam = CompTeam;
     this.currentIndex = null;
     this.currentMove = null;
-    this.currentRangeAttack = null;
+    this.currentAttack = null;
     this.currentCharacter = null;
-    // this.currentRange = [];
-    // this.currentRangeMove = new Set();
-    // this.currentIndexPosition = null;
+
     this.matrix = createMatrix(this.gamePlay.boardSize);
   }
 
@@ -43,7 +40,7 @@ export default class GameState {
 
   currentRange() {
     const currentIndexPosition = this.currentIndexPosition();
-    return findRange(currentIndexPosition[0], currentIndexPosition[1], this.matrix, this.currentRangeAttack);
+    return findRangeAttack(currentIndexPosition[0], currentIndexPosition[1], this.matrix, this.currentAttack);
   }
 
   currentRangeMove() {
@@ -53,7 +50,7 @@ export default class GameState {
 
   reset() {
     this.currentIndex = null;
-    this.currentRangeAttack = null;
+    this.currentAttack = null;
     this.currentCharacter = null;
     this.currentMove = null;
   }
