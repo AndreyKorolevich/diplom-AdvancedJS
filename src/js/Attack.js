@@ -9,11 +9,11 @@ export default async (attacker, target, state) => {
     state.CompTeam.team = state.CompTeam.team.filter((item) => item.position !== target.position);
     state.UserTeam.team = state.UserTeam.team.filter((item) => item.position !== target.position);
     if (state.arrUserPosition().length === 0) {
-      GamePlay.showMessage('user Game over');
-       state.block = true;
+      state.block = true;
+      GamePlay.showMessage('Game over');
     } else if (state.arrCompPosition().length === 0) {
-      return new Promise((res, rej) => {
-        res('next');
+      return new Promise((response) => {
+        response('next');
       })
     }
   }

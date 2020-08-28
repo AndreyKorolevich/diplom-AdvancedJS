@@ -6,6 +6,8 @@ export default class GameState {
     this.isMove = 'user';
     this.block = false;
     this.level = 1;
+    this.point = 0;
+    this.history = [];
     this.UserTeam = UserTeam;
     this.CompTeam = CompTeam;
     this.currentIndex = null;

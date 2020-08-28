@@ -1,4 +1,4 @@
-import { calcHealthLevel, calcTileType } from './utils';
+import {calcHealthLevel, calcTileType} from './utils';
 
 export default class GamePlay {
   constructor() {
@@ -30,7 +30,7 @@ export default class GamePlay {
     this.checkBinding();
 
     this.container.innerHTML = `
-      <div class="controls">
+      <div id="contr" class="controls">
         <button data-id="action-restart" class="btn">New Game</button>
         <button data-id="action-save" class="btn">Save Game</button>
         <button data-id="action-load" class="btn">Load Game</button>
@@ -227,5 +227,17 @@ export default class GamePlay {
     if (this.container === null) {
       throw new Error('GamePlay not bind to DOM');
     }
+  }
+
+  showPoints(amount) {
+    const points = document.getElementsByClassName('point');
+    if (points.length === 0) {
+      const point = document.createElement('div');
+      const controls = document.getElementById('contr');
+      point.classList.add('point');
+      point.textContent = `Points: ${amount}`;
+      controls.appendChild(point);
+    }
+    points[0].textContent = `Points: ${amount}`;
   }
 }

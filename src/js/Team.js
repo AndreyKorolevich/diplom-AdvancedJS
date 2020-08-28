@@ -8,6 +8,6 @@ export default class Team {
   }
 
   deleteCharacter() {
-
+    this.team = [];
   }
 }

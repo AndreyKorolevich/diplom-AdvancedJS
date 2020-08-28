@@ -1,5 +1,5 @@
 import {findIndex, findRangeAttack, findRangeMove} from './createMatrix';
-import attack from "./attack";
+import attackFun from "./Attack";
 
 const howToMove = (state, nearestUserChar, strongestChar) => {
   const posCompInMatr = findIndex(strongestChar.position, state.matrix, state.gamePlay.boardSize);
@@ -122,33 +122,24 @@ const searchCharacterForAttack = async (state) => {
     const char = state.CompTeam.team[i];
     const charPositionInMatrix = findIndex(char.position, state.matrix, state.gamePlay.boardSize);
     const rangeAttack = findRangeAttack(charPositionInMatrix[0], charPositionInMatrix[1], state.matrix, char.character.rangeAttack);
-    for (let j = 0; j < state.UserTeam.team.length; j++) {
+    const amountUser = state.UserTeam.team.length;
+    for (let j = 0; j < amountUser; j++) {
       const user = state.UserTeam.team[j];
       if (rangeAttack.has(user.position)) {
-        await attack(char, user, state)
+        await attackFun(char, user, state);
         state.isMove = 'user';
-        return new Promise((res, rej) => {
-          res('attack');
-        })
+        return new Promise((response) => {
+          response('attack');
+        });
       }
     }
   }
-  return new Promise((res, rej) => {
-    res('move');
-  })
+  return new Promise((response) => {
+    response('move');
+  });
 };
 
 export const compAction = async (state) => {
-  // 1) Определить есть ли персонаж юзера в обасти для атаки либого из персонажей
-  // 1.1) если есть то атаковать. Передать ход юзеру.
-  // 2) Если нету выбрать сильнейшого героя по леволу
-  // 3) сделать ход на встречу ближайшему герою юзера
-  // 3.1) Определить расстояние до всех героев, и ыбрать ближайшего
-  // 3.2) У ближайшего определить на одной ли линии по вериткали или горизонтали
-  // находится
-  // 3.2.1) если да двигаться по прямой на минимальное достаточное для атаки расстояние
-  // 3.2.2) если нет то двигаться по диоганали пока не выйдет на одну линию
-
   const action = await searchCharacterForAttack(state);
   if (action === 'move') {
     moveComp(state);
