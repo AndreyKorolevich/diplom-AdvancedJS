@@ -1,6 +1,6 @@
 import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
-import {generateTeam} from './generators';
+import { generateTeam } from './generators';
 import {
   Bowman, Daemon, Magician, Swordsman, Undead, Vampire,
 } from './Character';
@@ -8,7 +8,7 @@ import Team from './Team';
 import GamePlay from './GamePlay';
 import cursors from './cursors';
 import GameState from './GameState';
-import {compAction} from './compAction';
+import { compAction } from './compAction';
 import attack from './Attack';
 
 export default class GameController {
@@ -52,21 +52,27 @@ export default class GameController {
     try {
       const loadGameState = this.stateService.load();
       if (loadGameState) {
-        this.UserTeam = loadGameState.UserTeam;
-        this.CompTeam = loadGameState.CompTeam;
+        this.UserTeam.deleteCharacter();
+        this.CompTeam.deleteCharacter();
+        this.UserTeam.addCharacters(loadGameState.UserTeam.team);
+        this.CompTeam.addCharacters(loadGameState.CompTeam.team);
+
         this.gameState.isMove = loadGameState.isMove;
         this.gameState.block = loadGameState.block;
         this.gameState.level = loadGameState.level;
         this.gameState.point = loadGameState.point;
         this.gameState.history = loadGameState.history;
-        this.gameState.UserTeam = loadGameState.UserTeam;
-        this.gameState.CompTeam = loadGameState.CompTeam;
+        this.gameState.UserTeam = this.UserTeam;
+        this.gameState.CompTeam = this.CompTeam;
         this.gameState.currentIndex = loadGameState.currentIndex;
         this.gameState.currentMove = loadGameState.currentMove;
         this.gameState.currentAttack = loadGameState.currentAttack;
         this.gameState.currentCharacter = loadGameState.currentCharacter;
         this.gamePlay.drawUi(themes.item(this.gameState.level));
         this.gamePlay.redrawPositions([...this.gameState.arrTeam()]);
+        if (this.gameState.currentIndex !== null) {
+          this.gamePlay.selectCell(this.gameState.currentIndex);
+        }
       }
     } catch (e) {
       console.err(e);
@@ -260,6 +266,10 @@ export default class GameController {
         && indexInArr === -1) || indexInUserArr !== -1) {
         this.gamePlay.setCursor(cursors.auto);
       }
+
+      if (this.gameState.currentIndex !== null) {
+        this.gamePlay.setCursor(cursors.auto);
+      }
     }
   }
 
@@ -276,6 +286,4 @@ export default class GameController {
   upAttackDefence(attackBefore, life) {
     return Math.floor(Math.max(attackBefore, attackBefore * (1.8 - life / 100)));
   }
-
 }
-

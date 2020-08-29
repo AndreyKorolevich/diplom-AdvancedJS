@@ -1,5 +1,5 @@
-import {findIndex, findRangeAttack, findRangeMove} from './createMatrix';
-import attackFun from "./Attack";
+import { findIndex, findRangeAttack, findRangeMove } from './createMatrix';
+import attackFun from './Attack';
 
 const howToMove = (state, nearestUserChar, strongestChar) => {
   const posCompInMatr = findIndex(strongestChar.position, state.matrix, state.gamePlay.boardSize);

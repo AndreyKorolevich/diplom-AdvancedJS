@@ -4,7 +4,7 @@ import {
 
 test('should throw', () => {
   expect(() => {
-    const result = new Character(1);
+    new Character(1);
   }).toThrow();
 });
 
@@ -15,7 +15,10 @@ test('should Bowman', () => {
     attack: 25,
     defence: 25,
     health: 50,
-    type: 'generic',
+    type: 'bowman',
+    rangeAttack: 5,
+    rangeMove: 5,
+    name: 'Bowman',
   });
 });
 
@@ -26,7 +29,10 @@ test('should Daemon', () => {
     attack: 10,
     defence: 40,
     health: 50,
-    type: 'generic',
+    type: 'daemon',
+    rangeAttack: 9,
+    rangeMove: 3,
+    name: 'Daemon',
   });
 });
 
@@ -37,7 +43,10 @@ test('should Swordsman', () => {
     attack: 40,
     defence: 10,
     health: 50,
-    type: 'generic',
+    type: 'swordsman',
+    rangeAttack: 3,
+    rangeMove: 9,
+    name: 'Swordsman',
   });
 });
 
@@ -48,7 +57,10 @@ test('should Magician', () => {
     attack: 10,
     defence: 40,
     health: 50,
-    type: 'generic',
+    type: 'magician',
+    rangeAttack: 9,
+    rangeMove: 3,
+    name: 'Magician',
   });
 });
 
@@ -59,7 +71,10 @@ test('should Vampire', () => {
     attack: 25,
     defence: 25,
     health: 50,
-    type: 'generic',
+    type: 'vampire',
+    rangeAttack: 5,
+    rangeMove: 5,
+    name: 'Vampire',
   });
 });
 
@@ -70,6 +85,9 @@ test('should Undead', () => {
     attack: 40,
     defence: 10,
     health: 50,
-    type: 'generic',
+    type: 'undead',
+    rangeAttack: 3,
+    rangeMove: 9,
+    name: 'Undead',
   });
 });

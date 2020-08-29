@@ -14,7 +14,7 @@ export default async (attacker, target, state) => {
     } else if (state.arrCompPosition().length === 0) {
       return new Promise((response) => {
         response('next');
-      })
+      });
     }
   }
   state.gamePlay.redrawPositions([...state.arrTeam()]);
