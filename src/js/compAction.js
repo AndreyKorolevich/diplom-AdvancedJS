@@ -1,4 +1,4 @@
-import { findIndex, findRangeAttack, findRangeMove } from './createMatrix';
+import {findIndex, findRangeAttack, findRangeMove} from './createMatrix';
 import attackFun from './Attack';
 
 const howToMove = (state, nearestUserChar, strongestChar) => {
@@ -128,6 +128,11 @@ const searchCharacterForAttack = async (state) => {
       if (rangeAttack.has(user.position)) {
         await attackFun(char, user, state);
         state.isMove = 'user';
+        if (amountUser !== state.UserTeam.team.length) {
+          return new Promise((response) => {
+            response('dead');
+          });
+        }
         return new Promise((response) => {
           response('attack');
         });
@@ -143,5 +148,7 @@ export const compAction = async (state) => {
   const action = await searchCharacterForAttack(state);
   if (action === 'move') {
     moveComp(state);
+  } else {
+    return action;
   }
 };

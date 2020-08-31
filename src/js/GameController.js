@@ -1,6 +1,6 @@
 import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
-import { generateTeam } from './generators';
+import {generateTeam} from './generators';
 import {
   Bowman, Daemon, Magician, Swordsman, Undead, Vampire,
 } from './Character';
@@ -8,7 +8,7 @@ import Team from './Team';
 import GamePlay from './GamePlay';
 import cursors from './cursors';
 import GameState from './GameState';
-import { compAction } from './compAction';
+import {compAction} from './compAction';
 import attack from './Attack';
 
 export default class GameController {
@@ -57,26 +57,25 @@ export default class GameController {
         this.UserTeam.addCharacters(loadGameState.UserTeam.team);
         this.CompTeam.addCharacters(loadGameState.CompTeam.team);
 
-        this.gameState.isMove = loadGameState.isMove;
+        this.gameState.isMove = 'user';
         this.gameState.block = loadGameState.block;
         this.gameState.level = loadGameState.level;
         this.gameState.point = loadGameState.point;
         this.gameState.history = loadGameState.history;
         this.gameState.UserTeam = this.UserTeam;
         this.gameState.CompTeam = this.CompTeam;
-        this.gameState.currentIndex = loadGameState.currentIndex;
-        this.gameState.currentMove = loadGameState.currentMove;
-        this.gameState.currentAttack = loadGameState.currentAttack;
-        this.gameState.currentCharacter = loadGameState.currentCharacter;
+        this.gameState.currentIndex = null;
+        this.gameState.currentMove = null;
+        this.gameState.currentAttack = null;
+        this.gameState.currentCharacter = null;
         this.gamePlay.drawUi(themes.item(this.gameState.level));
         this.gamePlay.redrawPositions([...this.gameState.arrTeam()]);
-        if (this.gameState.currentIndex !== null) {
-          this.gamePlay.selectCell(this.gameState.currentIndex);
-        }
+        this.gamePlay.showPoints(this.gameState.point);
       }
-    } catch (e) {
-      console.err(e);
-      GamePlay.showMessage('Не удалось загрузить игру');
+      throw new Error('There`s no game in memory');
+    } catch (err) {
+      console.error(err);
+      GamePlay.showMessage('There`s no game in memory');
       this.newGame();
     }
   }
@@ -182,7 +181,7 @@ export default class GameController {
         this.gameState.isMove = 'comp';
         this.gamePlay.redrawPositions(this.gameState.arrTeam());
 
-        compAction(this.gameState);
+        compAction(this.gameState); // response action computer
       } else if (this.gameState.currentIndex !== null && indexInCompArr !== -1 // attack on computer
         && this.gameState.currentRange().has(index)) {
         const indexComp = this.gameState.arrCompPosition().indexOf(index);
@@ -201,7 +200,13 @@ export default class GameController {
           this.gamePlay.showPoints(this.gameState.point);
           return;
         }
-        compAction(this.gameState);
+        const action = await compAction(this.gameState); // response action computer
+        if (action === 'dead') { // dead user character
+          this.gamePlay.deselectCell(this.gameState.currentIndex);
+          this.gamePlay.deselectCell(index);
+          this.gamePlay.setCursor(cursors.auto);
+          this.gameState.reset();
+        }
       } else if (indexInCompArr !== -1 && !this.gameState.currentRange().has(index)
         && this.gameState.currentIndex !== null) { // show error
         this.gamePlay.setCursor(cursors.notallowed);
