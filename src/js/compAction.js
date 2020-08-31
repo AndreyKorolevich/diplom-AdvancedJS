@@ -1,4 +1,4 @@
-import {findIndex, findRangeAttack, findRangeMove} from './createMatrix';
+import { findIndex, findRangeAttack, findRangeMove } from './createMatrix';
 import attackFun from './Attack';
 
 const howToMove = (state, nearestUserChar, strongestChar) => {

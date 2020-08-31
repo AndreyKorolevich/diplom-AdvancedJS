@@ -1,6 +1,6 @@
 import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
-import {generateTeam} from './generators';
+import { generateTeam } from './generators';
 import {
   Bowman, Daemon, Magician, Swordsman, Undead, Vampire,
 } from './Character';
@@ -8,7 +8,7 @@ import Team from './Team';
 import GamePlay from './GamePlay';
 import cursors from './cursors';
 import GameState from './GameState';
-import {compAction} from './compAction';
+import { compAction } from './compAction';
 import attack from './Attack';
 
 export default class GameController {
