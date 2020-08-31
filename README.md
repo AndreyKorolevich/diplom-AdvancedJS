@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/9dwnkferk61fjohg?svg=true)](https://ci.appveyor.com/project/AndreyKorolevich/diplom-advancedjs)
 # AJS. Retro Game
 
 ###### tags: `netology` `advanced js`
