@@ -40,8 +40,6 @@ export default class GameController {
     this.events();
     this.gamePlay.drawUi(themes.item(this.gameState.level));
     this.displayCharacter();
-
-    // TODO: load saved stated from stateService
   }
 
   saveGame() {
@@ -290,6 +288,6 @@ export default class GameController {
   }
 
   upAttackDefence(attackBefore, life) {
-    return Math.floor(Math.max(attackBefore, attackBefore * (1.8 - life / 100)));
+    return Math.floor(Math.max(attackBefore, attackBefore * (1.6 - life / 100)));
   }
 }

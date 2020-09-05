@@ -3,7 +3,7 @@ export default class Character {
     this.level = level;
     this.attack = 0;
     this.defence = 0;
-    this.health = 50;
+    this.health = 100;
     this.type = type;
     if (new.target.name === 'Character') {
       throw new Error('Impossible create instance');
@@ -47,8 +47,8 @@ export class Magician extends Character {
 export class Vampire extends Character {
   constructor(level, type = 'vampire') {
     super(level, type = 'vampire');
-    this.attack = 25;
-    this.defence = 25;
+    this.attack = Math.ceil(25 * Math.max(1, 0.7 + (level + 2) / 10));
+    this.defence = Math.ceil(25 * Math.max(1, 0.7 + (level + 2) / 10));
     this.rangeAttack = 5;
     this.rangeMove = 5;
     this.name = 'Vampire';
@@ -58,8 +58,8 @@ export class Vampire extends Character {
 export class Undead extends Character {
   constructor(level, type = 'undead') {
     super(level, type = 'undead');
-    this.attack = 40;
-    this.defence = 10;
+    this.attack = Math.ceil(40 * Math.max(1, 0.7 + (level + 2) / 10));
+    this.defence = Math.ceil(10 * Math.max(1, 0.7 + (level + 2) / 10));
     this.rangeAttack = 3;
     this.rangeMove = 9;
     this.name = 'Undead';
@@ -69,8 +69,8 @@ export class Undead extends Character {
 export class Daemon extends Character {
   constructor(level, type = 'daemon') {
     super(level, type = 'daemon');
-    this.attack = 10;
-    this.defence = 40;
+    this.attack = Math.ceil(10 * Math.max(1, 0.7 + (level + 2) / 10));
+    this.defence = Math.ceil(40 * Math.max(1, 0.7 + (level + 2) / 10));
     this.rangeAttack = 9;
     this.rangeMove = 3;
     this.name = 'Daemon';
